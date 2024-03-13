@@ -3,7 +3,7 @@ const ContactService = require("../services/contact.service");
 const MongoDB = require("../utils/mongodb.util");
 
 exports.create = async (req, res, next)=>{
-    if (!req.body?.name) {
+    if (req.body?.name==null) {
         console.log(`${req.body.name}`);
         return next (new ApiError(400, "Name can't be empty!"));
     }
@@ -17,15 +17,16 @@ exports.create = async (req, res, next)=>{
     }
 };
 
-exports.findAll = (req, res, next)=>{
+exports.findAll = async (req, res, next)=>{
     let documents = [];
     try {
         const contactService = new ContactService(MongoDB.client);
         const { name } = req.query;
         if (name) {
-            documents = contactService.findByName(name);
+            documents = await contactService.findByName(name);
+            console.log(typeof(documents));
         } else {
-            documents = contactService.find({});
+            documents = await contactService.find({});
         }
     } catch (error){
         return next(new ApiError(500, `Error: ${error}`));
@@ -67,7 +68,7 @@ exports.delete = async (req, res, next)=>{
     try {
         const contactService = new ContactService(MongoDB.client);
         const document = await contactService.delete(req.params.id);
-        if (!document){
+        if (document == null){
             return next(new ApiError(404, "Contact not found"));
         }
         return res.send({message: "Delete successfull"});
@@ -92,6 +93,7 @@ exports.findAllFavorite = async (req, res, next)=>{
     try {
         const contactService = new ContactService(MongoDB.client);
         const document = await contactService.findFavorite();
+        console.log(typeof(document));
         return res.send(document);
     } catch (error){
         return next (new ApiError(500, `Error with find favorite .. ${error}`) );
