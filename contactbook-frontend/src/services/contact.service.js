@@ -1,6 +1,6 @@
 import createApiClient from "./api.service";
 class ContactService {
-    constructor(baseUrl = "/api/contacts") {
+    constructor(baseUrl = "http://127.0.0.1:3000/api/contacts") {
         this.api = createApiClient(baseUrl);
     }
 
@@ -21,7 +21,7 @@ class ContactService {
     }
 
     async update(id, data) {
-        return (await this.api.put(`/${id}`, data)).data;
+        return (await this.api.post(`/${id}`, data)).data;
     }
 
     async delete(id) {
